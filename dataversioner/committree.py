@@ -10,6 +10,7 @@ class CommitTree():
         self.successors = {name: []}
         self.root = name
         self.current = name
+        self.depth = 1
 
     def __str__(self):
 
@@ -25,15 +26,24 @@ class CommitTree():
         return traverse_tree(self.root)
 
     def verbose_ctree_str(self):
-        def traverse_tree(commit_name: str, n_indent: int = 0):
-            if commit_name == self.root:
-                print_out = commit_name  + "\t" + self.commits[commit_name].message 
-            else:
-                print_out = "\n" + " " * n_indent + "- " + commit_name + "\t" + self.commits[commit_name].message 
+
+        def traverse_depth(commit_name: str):
+            depths = [0]
             for succ_name in self.successors[commit_name]:
-                print_out += traverse_tree(succ_name, n_indent + 3)
+                depths.append(traverse_depth(succ_name))
+            return max(max(depths) + 1, 1)
+        depth = traverse_depth(self.root)
+
+        def traverse_tree(commit_name: str, depth, n_indent: int = 0):
+            
+            if commit_name == self.root:
+                print_out = commit_name  + "\t" * depth + self.commits[commit_name].message 
+            else:
+                print_out = "\n" + " " * n_indent + "- " + commit_name + "\t"  * depth + self.commits[commit_name].message 
+            for succ_name in self.successors[commit_name]:
+                print_out += traverse_tree(succ_name, depth - 1, n_indent + 3)
             return print_out
-        return traverse_tree(self.root)
+        return traverse_tree(self.root, depth)
 
     def commit_exists(self, name: str):
         return name in self.commits.keys()
