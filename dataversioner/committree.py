@@ -17,7 +17,7 @@ class CommitTree():
             if commit_name == self.root:
                 print_out = commit_name
             else:
-                print_out = "\n" + " " * n_indent + "-" + commit_name
+                print_out = "\n" + " " * n_indent + "- " + commit_name
             for succ_name in self.successors[commit_name]:
                 print_out += traverse_tree(succ_name, n_indent + 3)
             return print_out
@@ -29,7 +29,7 @@ class CommitTree():
             if commit_name == self.root:
                 print_out = commit_name  + "\t" + self.commits[commit_name].message 
             else:
-                print_out = "\n" + " " * n_indent + "-" + commit_name + "\t" + self.commits[commit_name].message 
+                print_out = "\n" + " " * n_indent + "- " + commit_name + "\t" + self.commits[commit_name].message 
             for succ_name in self.successors[commit_name]:
                 print_out += traverse_tree(succ_name, n_indent + 3)
             return print_out

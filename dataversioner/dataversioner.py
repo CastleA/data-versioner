@@ -33,7 +33,7 @@ class DataVersioner():
         return self.ctree.get_all_commits(mode)
 
     def show_commits(self, verbose: bool = False):
-        if verbose: self.ctree.print__ctree()
+        if verbose: print(self.ctree.verbose_ctree_str())
         else: print(self.ctree)
 
     def status(self):
@@ -41,8 +41,8 @@ class DataVersioner():
 
     def show_commit(self, name: str = None):
         if name is None:
-            self.ctree.print_commit_summary(self.ctree.get_current())
+            print(self.ctree.verbose_commit_str(self.ctree.get_current()))
         elif not self.ctree.commit_exists(name):
             raise KeyError(f"Commit {name} does not exist.")
         else:
-            self.ctree.print_commit_summary(name)
+            print(self.ctree.verbose_commit_str(name))
