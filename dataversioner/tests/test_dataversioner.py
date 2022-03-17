@@ -14,5 +14,26 @@ class TestDataVersioner(unittest.TestCase):
     def tearDown(self):
         self.dv.dispose()
 
-    def test_init_dataversioner():
+    def test_init():
+        pass
+
+    def test_commit_exists(self, name: str):
+        pass
+
+    def test_commit(self, name: str, message: str):
+        pass
+
+    def test_checkout(self, name: str, allow_discard_changes: bool = False):
+        pass
+
+    def test_commits(self, verbose: bool = False):
+        pass
+
+    def test_show_commits(self, verbose: bool = False):
+        pass
+
+    def test_status(self):
+        pass
+
+    def test_show_commit(self, name: str = None):
         pass
