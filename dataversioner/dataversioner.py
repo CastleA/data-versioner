@@ -12,9 +12,9 @@ class DataVersioner():
     def __init__(self, data: pd.DataFrame,
                  first_commit_name: str = FIRST_COMMIT_NAME,
                  first_commit_message: str = FIRST_COMMIT_MESSAGE) -> None:
-        self.ctree = CommitTree(data.copy(),
-                                first_commit_name,
-                                first_commit_message)
+        self.ctree = CommitTree.create_committree(data.copy(),
+                                                  first_commit_name,
+                                                  first_commit_message)
         self.data = data
 
     def commit_exists(self, name: str):
