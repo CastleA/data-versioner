@@ -1,6 +1,8 @@
-from dataversioner.datacommit import DataCommit
+from typing import List
 
 import pandas as pd
+
+from datacommit import DataCommit
 
 
 class CommitTree():
@@ -10,45 +12,44 @@ class CommitTree():
         self.successors = {name: []}
         self.root = name
         self.current = name
-        self.depth = 1
+
+    def _traverse_tree(self, commit_name: str, depth: int = 0):
+        details = self.commits[commit_name].get_details()
+        tree_list = [{'depth': depth, **details}]
+        for succ_name in self.successors[commit_name]:
+            tree_list += self._traverse_tree(succ_name, depth + 1)
+        return tree_list
 
     def __str__(self):
+        string = ""
+        for node in self._traverse_tree(self.root):
+            width = (node['depth'] - 1) * 5 + 3
+            string += '{}{}{}\n'.format(' ' * width, '- ' if node['depth'] else '', node['name'])
+        return string
 
-        def traverse_tree(commit_name: str, n_indent: int = 0):
-            if commit_name == self.root:
-                print_out = commit_name
-            else:
-                print_out = "\n" + " " * n_indent + "- " + commit_name
-            for succ_name in self.successors[commit_name]:
-                print_out += traverse_tree(succ_name, n_indent + 3)
-            return print_out
+    def verbose_ctree_str(self) -> str:
+        string = ""
+        traversed_tree = self._traverse_tree(self.root)
+        message_justify = max([c['depth']*5 + len(c['name']) for c in traversed_tree]) + 8
+        for node in self._traverse_tree(self.root):
+            leading = '' if node['depth'] == 0 else ' ' * ((node['depth'] * 5) - 2) + '- '
+            padded_name = node['name'].ljust(message_justify - node['depth'] * 5)
+            string += '{}{}{}\n'.format(leading, padded_name, node['message'])
+        return string
 
-        return traverse_tree(self.root)
+    def _get_all_commits(self) -> List[str]:
+        return list(self.successors.keys())
 
-    def verbose_ctree_str(self):
+    def _get_successors(self, name: str) -> List[str]:
+        return self.successors[name]
 
-        def traverse_depth(commit_name: str):
-            depths = [0]
-            for succ_name in self.successors[commit_name]:
-                depths.append(traverse_depth(succ_name))
-            return max(max(depths) + 1, 1)
-        depth = traverse_depth(self.root)
+    def get_current(self):
+        return self.current
 
-        def traverse_tree(commit_name: str, depth, n_indent: int = 0):
-            
-            if commit_name == self.root:
-                print_out = commit_name  + "\t" * depth + self.commits[commit_name].message 
-            else:
-                print_out = "\n" + " " * n_indent + "- " + commit_name + "\t"  * depth + self.commits[commit_name].message 
-            for succ_name in self.successors[commit_name]:
-                print_out += traverse_tree(succ_name, depth - 1, n_indent + 3)
-            return print_out
-        return traverse_tree(self.root, depth)
+    def verbose_commit_str(self, name: str):
+        return str(self.commits[name]) + f"\n\n{str(self.commits[name].get_data(False))}"
 
-    def commit_exists(self, name: str):
-        return name in self.commits.keys()
-
-    def get_commit_data(self, name:str, copy: bool = True):
+    def get_commit_data(self, name: str, copy: bool = True):
         return self.commits[name].get_data(copy)
 
     def add_commit(self, data: pd.DataFrame(), name: str, message: str):
@@ -60,16 +61,9 @@ class CommitTree():
     def checkout_commit(self, name: str):
         self.current = name
         return self.get_commit_data(name)
-        
+
     def get_all_commits(self, mode: str = 'names'):
         if mode == 'names':
-            return list(self.commits.keys())
+            return self._get_all_commits()
         elif mode == 'details':
             return [self.commits[name].get_details() for name in self.commits.keys()]
-
-    def get_current(self):
-        return self.current
-
-    def verbose_commit_str(self, name: str):
-        return str(self.commits[name]) + f"\n\n{str(self.commits[name].get_data(False))}"
-        

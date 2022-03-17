@@ -2,6 +2,12 @@
 Data versioner is a python package that offers git-like tracking of your dataframe so that your experimental variations and EDA findings are preserved, even as your notebook evolves.
 
 ## Import and initialize data versioner
+hljs.configure({
+  noHighlightRe: /^do-not-highlightme$/i,
+  languageDetectRe: /\bgrammar-([\w-]+)\b/i, // for `grammar-swift` style CSS naming
+  classPrefix: ''     // don't append class prefix
+                      // … other options aren't changed
+});
 ```python
 >>> from dataversioner.dataversioner import DataVersioner
 >>> import pandas as pd
@@ -10,18 +16,25 @@ Data versioner is a python package that offers git-like tracking of your datafra
                   columns = ["a", "b", "c"])
 
 >>> dv = DataVersioner(df)
->>> dv.commits()
-['Initial df']
+>>> dv.status()
+'Initial df' - First commit of data
+Committed at 01:32 PM on Mar 07, 2022
+
+   a  b  c
+0  1  2  3
+1  4  5  6
+2  7  8  9
 ```
 
 ## Add commits
 ```python
 >>> dv.data['sum'] = dv.data.sum(axis=1)
 >>> dv.data
-a	b	c	sum
-0	1	2	3	6
-1	4	5	6	15
-2	7	8	9	24
+   a  b  c  sum
+0  1  2  3  6
+1  4  5  6  15
+2  7  8  9  24
+
 
 >>> dv.commit("Row sum", "Added 'sum' of a, b, c")
 >>> dv.commits()
@@ -33,7 +46,7 @@ a	b	c	sum
 # See current commit
 >>> dv.status()
 'Row sum' - Added 'sum' of a, b, c
-Committed at 05:03 PM on Mar 06, 2022
+Committed at 01:57 PM on Mar 07, 2022
 
    a  b  c  sum
 0  1  2  3    6
@@ -42,7 +55,7 @@ Committed at 05:03 PM on Mar 06, 2022
 
 >>> dv.show_commit('Initial df')
 'Initial df' - First commit of data
-Committed at 05:06 PM on Mar 06, 2022
+Committed at 01:32 PM on Mar 07, 2022
 
    a  b  c
 0  1  2  3
@@ -58,8 +71,8 @@ Initial df
 ```python
 >>> dv.checkout('Initial df')
 >>> dv.data
-a	b	c
-0	1	2	3
-1	4	5	6
-2	7	8	9
+   a  b  c
+0  1  2  3
+1  4  5  6
+2  7  8  9
 ```
