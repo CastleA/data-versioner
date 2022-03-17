@@ -5,7 +5,7 @@ import pandas as pd
 
 
 class DataCommit():
-
+    """The DataCommit class captures a snapshot of a dataframe along with accessory information."""
     def __init__(self, data: pd.DataFrame, name: str, message: str) -> None:
         self.df = data
         self.name = name
