@@ -2,12 +2,12 @@ import pandas as pd
 
 from committree import CommitTree
 
-FIRST_COMMIT_NAME = "Initial dataframe"
-FIRST_COMMIT_MESSAGE = "Data at initialization"
-
 
 class DataVersioner():
     """The DataVersioner class is the interface between the user and the CommitTree tree object."""
+
+    FIRST_COMMIT_NAME = "Initial dataframe"
+    FIRST_COMMIT_MESSAGE = "Data at initialization"
 
     def __init__(self, data: pd.DataFrame,
                  first_commit_name: str = FIRST_COMMIT_NAME,
