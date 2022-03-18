@@ -6,19 +6,19 @@ from committree import CommitTree
 class DataVersioner():
     """The DataVersioner class is the interface between the user and the CommitTree tree object."""
 
-    FIRST_COMMIT_NAME = "Initial dataframe"
-    FIRST_COMMIT_MESSAGE = "Data at initialization"
+    FIRST_NAME = "Initial dataframe"
+    FIRST_MESSAGE = "Data at initialization"
 
     def __init__(self, data: pd.DataFrame,
-                 first_commit_name: str = FIRST_COMMIT_NAME,
-                 first_commit_message: str = FIRST_COMMIT_MESSAGE) -> None:
+                 first_commit_name: str = FIRST_NAME,
+                 first_commit_message: str = FIRST_MESSAGE) -> None:
         self.ctree = CommitTree.create_committree(data.copy(),
                                                   first_commit_name,
                                                   first_commit_message)
         self.data = data
 
     def commit_exists(self, name: str):
-        return name in self.ctree.get_all_commits()
+        return name in self.ctree.get_commits()
 
     def commit(self, name: str, message: str):
         if self.commit_exists(name):
@@ -39,7 +39,7 @@ class DataVersioner():
 
     def commits(self, verbose: bool = False):
         mode = 'details' if verbose else 'names'
-        return self.ctree.get_all_commits(mode)
+        return self.ctree.get_commits(mode)
 
     def show_commits(self, verbose: bool = False):
         print(self.ctree.get_committree_str(verbose=verbose))
@@ -53,4 +53,4 @@ class DataVersioner():
         elif not self.commit_exists(name):
             raise KeyError(f"Commit {name} does not exist.")
         else:
-            print(self.ctree.get_committree_str(name, verbose=True))
+            print(self.ctree.get_commit_str(name))

@@ -15,8 +15,8 @@ class CommitTree():
             self.message = message
             self.commit_time = datetime.now()
 
-        def __str__(self) -> str:
-            truncate = len(self.message) >= 50
+        def __str__(self, trunc_len: int = 80) -> str:
+            truncate = len(self.message) >= trunc_len
             message = self.message[:50] + '...' if truncate else self.message
             time_format = self.commit_time.strftime('%I:%m %p on %b %d, %Y')
             return f"'{self.name}' - {message}\nCommitted at {time_format}"
@@ -49,10 +49,16 @@ class CommitTree():
     def __str__(self):
         return self.get_committree_str()
 
-    def _traverse_tree(self, commit_name: str, depth: int = 0):
-        details = self._commits[commit_name].get_details()
+    def _get_commits(self) -> List[str]:
+        return list(self._successors.keys())
+
+    def _get_successors(self, name: str) -> List[str]:
+        return self._successors[name]
+
+    def _traverse_tree(self, name: str, depth: int = 0):
+        details = self._commits[name].get_details()
         tree_list = [{'depth': depth, **details}]
-        for succ_name in self._successors[commit_name]:
+        for succ_name in self._successors[name]:
             tree_list += self._traverse_tree(succ_name, depth + 1)
         return tree_list
 
@@ -73,22 +79,16 @@ class CommitTree():
 
         return string
 
-    def _get_all_commits(self) -> List[str]:
-        return list(self._successors.keys())
-
-    def get_all_commits(self, mode: str = 'names'):
+    def get_commits(self, mode: str = 'names'):
         if mode == 'names':
-            return self._get_all_commits()
+            return self._get_commits()
         elif mode == 'details':
-            return [self._commits[name].get_details() for name in self._get_all_commits()]
-
-    def _get_successors(self, name: str) -> List[str]:
-        return self._successors[name]
+            return [self._commits[name].get_details() for name in self._get_commits()]
 
     def get_current(self):
         return self._current
 
-    def get_commit_str(self, name: str, verbose: bool = False):
+    def get_commit_str(self, name: str, verbose: bool = True):
         if verbose:
             return str(self._commits[name]) + f"\n\n{str(self._commits[name].get_data(False))}"
         else:
