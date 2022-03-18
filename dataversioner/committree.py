@@ -1,12 +1,40 @@
+from datetime import datetime
 from typing import Dict, List
 
 import pandas as pd
 
-from datacommit import DataCommit
-
 
 class CommitTree():
     """The CommitTree class is a tree data structure of DataCommit objects."""
+
+    class DataCommit():
+        """The DataCommit class captures a snapshot of a dataframe along with accessory information."""
+        def __init__(self, data: pd.DataFrame, name: str, message: str) -> None:
+            self.df = data
+            self.name = name
+            self.message = message
+            self.commit_time = datetime.now()
+
+        def __str__(self) -> str:
+            truncate = len(self.message) >= 50
+            message = self.message[:50] + '...' if truncate else self.message
+            time_format = self.commit_time.strftime('%I:%m %p on %b %d, %Y')
+            return f"'{self.name}' - {message}\nCommitted at {time_format}"
+
+        def get_details(self) -> Dict:
+            time_format = self.commit_time.strftime('%b %d, %Y %I:%m %p')
+            return {
+                    'name': self.name,
+                    'message': self.message,
+                    'time': time_format
+                    }
+
+        def get_data(self, copy: bool = True) -> pd.DataFrame:
+            if copy:
+                return self.df.copy()
+            else:
+                return self.df
+
     def __init__(self, commits: Dict, successors: Dict, root: str, current: str) -> None:
         self._commits = commits
         self._successors = successors
@@ -14,7 +42,7 @@ class CommitTree():
         self._current = current
 
     def create_committree(data: pd.DataFrame, name: str, message: str):
-        commits = {name: DataCommit(data, name, message)}
+        commits = {name: CommitTree.DataCommit(data, name, message)}
         successors = {name: []}
         return CommitTree(commits, successors, name, name)
 
@@ -70,7 +98,7 @@ class CommitTree():
         return self._commits[name].get_data(copy)
 
     def add_commit(self, data: pd.DataFrame(), name: str, message: str):
-        self._commits[name] = DataCommit(data.copy(), name, message)
+        self._commits[name] = CommitTree.DataCommit(data.copy(), name, message)
         self._successors[self._current].append(name)
         self._successors[name] = []
         self._current = name
