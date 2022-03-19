@@ -16,7 +16,7 @@ class DataVersioner():
     def commit_exists(self, name: str):
         return name in self.ctree.get_commits()
 
-    def commit(self, name: str, message: str, data: Optional[pd.DataFrame]):
+    def commit(self, name: str, message: str, data: Optional[pd.DataFrame] = None):
         if self.commit_exists(name):
             raise ValueError(f"Commit '{name}' already exists. Commit names must be unique.")
         if data is None:
@@ -32,7 +32,7 @@ class DataVersioner():
         if not self.commit_exists(name):
             raise KeyError(f"Commit {name} does not exist.")
         if protect_changes:
-            if self._data_differs(self.data, self.ctree.get_commit_data(self._ctree.get_current(), copy=False)):
+            if self._data_differs(self.data, self.ctree.get_commit_data(self.ctree.get_current(), copy=False)):
                 raise ValueError("Cannot checkout while data has uncommitted changes and protect_changes is True.")
         self.data = self.ctree.checkout_commit(name)
 
