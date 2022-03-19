@@ -26,10 +26,12 @@ class TestCommitTree(unittest.TestCase):
         self.assertEqual(self.ctree.get_commits(mode='details')[0]['message'], 'Data at initialization')
 
     def test_get_current(self):
-        pass
+        self.assertEqual(self.ctree.get_current(), 'Initial dataframe')
 
     def test_get_commit_str(self):
-        pass
+        commit_str = self.ctree.get_commit_str('Initial dataframe')
+        self.assertTrue(commit_str.startswith("'Initial dataframe' - Data at initialization\nCommitted"))
+        self.assertTrue("   a  b  c\n0  1  2  3\n1  4  5  6\n2  7  8  9" in commit_str)
 
     def test_get_commit_data(self):
         pass
