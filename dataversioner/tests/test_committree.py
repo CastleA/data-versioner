@@ -1,45 +1,47 @@
-# import typing
 import unittest
 
 import pandas as pd
 
-from dataversioner.dataversioner import CommitTree
+from dataversioner.committree import CommitTree
 
 
 class TestCommitTree(unittest.TestCase):
 
-    def setUp(self, data: pd.DataFrame):
-        self.ctree = CommitTree(data)
+    def setUp(self):
+        name, message = "Initial dataframe", "Data at initialization"
+        self.df = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], columns=["a", "b", "c"])
+        self.ctree = CommitTree.create_committree(self.df.copy(), name, message)
 
-    def tearDown(self):
-        self.ctree.dispose()
+    def test_create_committree(self):
+        self.df['sum'] = self.df.sum(axis=1)
+        self.assertNotEqual(self.ctree.get_commit_data(self.ctree.get_current()).shape, self.df.shape)
 
-    def test_init():
-        pass
+    def test_get_committree_str(self):
+        self.ctree.add_commit(self.df, 'Another commit', 'This is another commit for testing')
+        self.assertEqual(self.ctree.get_committree_str(), 'Initial dataframe\n   - Another commit\n')
 
-    def test_print():
-        pass
-
-    def test_create_committree(data: pd.DataFrame, name: str, message: str):
-        pass
-
-    def test_get_committree_str(self, verbose: bool = False) -> str:
-        pass
-
-    def test_get_all_commits(self, mode: str = 'names'):
-        pass
+    def test_get_all_commits(self):
+        self.assertEqual(self.ctree.get_commits(), ['Initial dataframe'])
+        self.assertEqual(self.ctree.get_commits(mode='details')[0]['name'], 'Initial dataframe')
+        self.assertEqual(self.ctree.get_commits(mode='details')[0]['message'], 'Data at initialization')
 
     def test_get_current(self):
         pass
 
-    def test_get_commit_str(self, name: str, verbose: bool = False):
+    def test_get_commit_str(self):
         pass
 
-    def test_get_commit_data(self, name: str, copy: bool = True):
+    def test_get_commit_data(self):
         pass
 
-    def test_add_commit(self, data: pd.DataFrame(), name: str, message: str):
+    def test_add_commit(self):
         pass
 
-    def test_checkout_commit(self, name: str):
+    def test_checkout_commit(self):
+        pass
+
+    def test_get_details(self):
+        pass
+
+    def test_get_data(self):
         pass

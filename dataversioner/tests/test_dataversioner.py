@@ -1,39 +1,34 @@
-# import typing
 import unittest
 
 import pandas as pd
 
-from dataversioner.dataversioner import DataVersioner  # , FIRST_COMMIT_NAME, FIRST_COMMIT_MESSAGE
+from dataversioner.dataversioner import DataVersioner
 
 
 class TestDataVersioner(unittest.TestCase):
 
-    def setUp(self, data: pd.DataFrame):
-        self.dv = DataVersioner(data)
+    def setUp(self):
+        name, message = "Initial dataframe", "Data at initialization"
+        self.df = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], columns=["a", "b", "c"])
+        self.dv = DataVersioner(self.df, name, message)
 
-    def tearDown(self):
-        self.dv.dispose()
+    def test_commit_exists(self):
+        self.assertTrue(self.dv.commit_exists("Initial dataframe"))
 
-    def test_init():
+    def test_commit(self):
         pass
 
-    def test_commit_exists(self, name: str):
+    def test_checkout(self):
         pass
 
-    def test_commit(self, name: str, message: str):
+    def test_commits(self):
         pass
 
-    def test_checkout(self, name: str, allow_discard_changes: bool = False):
-        pass
-
-    def test_commits(self, verbose: bool = False):
-        pass
-
-    def test_show_commits(self, verbose: bool = False):
+    def test_show_commits(self):
         pass
 
     def test_status(self):
         pass
 
-    def test_show_commit(self, name: str = None):
+    def test_show_commit(self):
         pass
