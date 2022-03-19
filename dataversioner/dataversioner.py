@@ -1,6 +1,8 @@
+from typing import Optional
+
 import pandas as pd
 
-from committree import CommitTree
+from dataversioner.committree import CommitTree
 
 
 class DataVersioner():
@@ -8,19 +10,20 @@ class DataVersioner():
 
     def __init__(self, data: pd.DataFrame,
                  name: str = "Initial dataframe", message: str = "Data at initialization") -> None:
-        self._ctree = CommitTree.create_committree(data.copy(), name, message)
+        self.ctree = CommitTree.create_committree(data.copy(), name, message)
         self.data = data
 
     def commit_exists(self, name: str):
         return name in self.ctree.get_commits()
 
-    def commit(self, name: str, message: str, data=None):
+    def commit(self, name: str, message: str, data: Optional[pd.DataFrame]):
         if self.commit_exists(name):
             raise ValueError(f"Commit '{name}' already exists. Commit names must be unique.")
         if data is None:
             self.ctree.add_commit(self.data, name, message)
         else:
             self.ctree.add_commit(data, name, message)
+            self.data = data
 
     def _data_differs(self, df1: pd.DataFrame, df2: pd.DataFrame):
         return not df1.equals(df2)
