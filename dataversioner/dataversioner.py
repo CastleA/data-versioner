@@ -6,35 +6,31 @@ from committree import CommitTree
 class DataVersioner():
     """The DataVersioner class is the interface between the user and the CommitTree tree object."""
 
-    FIRST_NAME = "Initial dataframe"
-    FIRST_MESSAGE = "Data at initialization"
-
     def __init__(self, data: pd.DataFrame,
-                 first_commit_name: str = FIRST_NAME,
-                 first_commit_message: str = FIRST_MESSAGE) -> None:
-        self.ctree = CommitTree.create_committree(data.copy(),
-                                                  first_commit_name,
-                                                  first_commit_message)
+                 name: str = "Initial dataframe", message: str = "Data at initialization") -> None:
+        self._ctree = CommitTree.create_committree(data.copy(), name, message)
         self.data = data
 
     def commit_exists(self, name: str):
         return name in self.ctree.get_commits()
 
-    def commit(self, name: str, message: str):
+    def commit(self, name: str, message: str, data=None):
         if self.commit_exists(name):
             raise ValueError(f"Commit '{name}' already exists. Commit names must be unique.")
-        self.ctree.add_commit(self.data, name, message)
+        if data is None:
+            self.ctree.add_commit(self.data, name, message)
+        else:
+            self.ctree.add_commit(data, name, message)
 
-    def _data_differs_from(self, name: str):
-        return not self.data.equals(self.ctree.get_commit_data(name, copy=False))
+    def _data_differs(self, df1: pd.DataFrame, df2: pd.DataFrame):
+        return not df1.equals(df2)
 
-    def checkout(self, name: str, allow_discard_changes: bool = False):
+    def checkout(self, name: str, protect_changes: bool = True):
         if not self.commit_exists(name):
             raise KeyError(f"Commit {name} does not exist.")
-
-        if (not allow_discard_changes) and (self._data_differs_from(self.ctree.get_current())):
-            raise ValueError("Cannot checkout while data has uncommitted changes and allow_discard_changes is False.")
-
+        if protect_changes:
+            if self._data_differs(self.data, self.ctree.get_commit_data(self._ctree.get_current(), copy=False)):
+                raise ValueError("Cannot checkout while data has uncommitted changes and protect_changes is True.")
         self.data = self.ctree.checkout_commit(name)
 
     def commits(self, verbose: bool = False):
