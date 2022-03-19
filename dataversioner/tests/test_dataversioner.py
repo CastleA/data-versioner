@@ -16,7 +16,8 @@ class TestDataVersioner(unittest.TestCase):
         self.assertTrue(self.dv.commit_exists("Initial dataframe"))
 
     def test_commit(self):
-        pass
+        self.dv.commit('Another commit', 'This is another commit for testing')
+        self.assertEqual(self.dv.commits(), ['Initial dataframe', 'Another commit'])
 
     def test_checkout(self):
         pass
