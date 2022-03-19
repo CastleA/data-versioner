@@ -1,16 +1,15 @@
+from copy import deepcopy
 from datetime import datetime
 from typing import Dict, List
-
-import pandas as pd
 
 
 class CommitTree():
     """The CommitTree class is a tree data structure of DataCommit objects."""
 
     class DataCommit():
-        """The DataCommit class captures a snapshot of a dataframe along with accessory information."""
-        def __init__(self, data: pd.DataFrame, name: str, message: str) -> None:
-            self.df = data
+        """The DataCommit class captures a record of data along with accessory information."""
+        def __init__(self, data, name: str, message: str) -> None:
+            self.data = data
             self.name = name
             self.message = message
             self.commit_time = datetime.now()
@@ -29,11 +28,11 @@ class CommitTree():
                     'time': time_format
                     }
 
-        def get_data(self, copy: bool = True) -> pd.DataFrame:
+        def get_data(self, copy: bool = True):
             if copy:
-                return self.df.copy()
+                return deepcopy(self.data)
             else:
-                return self.df
+                return self.data
 
     def __init__(self, commits: Dict, successors: Dict, root: str, current: str) -> None:
         self._commits = commits
@@ -41,7 +40,7 @@ class CommitTree():
         self._root = root
         self._current = current
 
-    def create_committree(data: pd.DataFrame, name: str, message: str):
+    def create_committree(data, name: str, message: str):
         commits = {name: CommitTree.DataCommit(data, name, message)}
         successors = {name: []}
         return CommitTree(commits, successors, name, name)
@@ -97,8 +96,8 @@ class CommitTree():
     def get_commit_data(self, name: str, copy: bool = True):
         return self._commits[name].get_data(copy)
 
-    def add_commit(self, data: pd.DataFrame(), name: str, message: str):
-        self._commits[name] = CommitTree.DataCommit(data.copy(), name, message)
+    def add_commit(self, data, name: str, message: str):
+        self._commits[name] = CommitTree.DataCommit(deepcopy(data), name, message)
         self._successors[self._current].append(name)
         self._successors[name] = []
         self._current = name
