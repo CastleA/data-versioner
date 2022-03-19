@@ -2,12 +2,7 @@
 Data versioner is a python package that offers git-like tracking of your dataframe so that your experimental variations and EDA findings are preserved, even as your notebook evolves.
 
 ## Import and initialize data versioner
-hljs.configure({
-  noHighlightRe: /^do-not-highlightme$/i,
-  languageDetectRe: /\bgrammar-([\w-]+)\b/i, // for `grammar-swift` style CSS naming
-  classPrefix: ''     // don't append class prefix
-                      // … other options aren't changed
-});
+
 ```python
 >>> from dataversioner.dataversioner import DataVersioner
 >>> import pandas as pd
